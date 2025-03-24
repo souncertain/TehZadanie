@@ -2,10 +2,11 @@
 using Core.Models;
 using AutoMapper;
 using Newtonsoft.Json;
+using Core.Interfaces;
 
-namespace Infrastructure
+namespace Infrastructure.Clients
 {
-    public class BitRestClient
+    public class BitRestClient : IBitRestClient
     {
         private readonly IMapper _mapper;
         public BitRestClient(IMapper mapper)
@@ -13,9 +14,9 @@ namespace Infrastructure
             _mapper = mapper;
         }
 
-        public async Task<List<Candle>> GetCandles(string pair, int periodInSec, DateTimeOffset? from, DateTimeOffset? to = null, long? count = 0)
+        public async Task<IEnumerable<Candle>> GetCandles(string pair, int periodInSec, DateTimeOffset? from, DateTimeOffset? to = null, long? count = 0)
         {
-            var options = new RestClientOptions($"https://api-pub.bitfinex.com/v2/candles/trade:{{periodInSec}}m:{{pair}}/hist");
+            var options = new RestClientOptions($"https://api-pub.bitfinex.com/v2/candles/trade:{periodInSec / 60}m:{pair}:a{count}:p{from}:p{to}/hist");
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
@@ -38,9 +39,9 @@ namespace Infrastructure
 
             return candles;
         }
-        public async Task<List<Trade>> GetTrades(string pair, int maxCount)
+        public async Task<IEnumerable<Trade>> GetTrades(string pair, int maxCount)
         {
-            var options = new RestClientOptions("https://api-pub.bitfinex.com/v2/trades/{pair}/hist?limit={maxCount}&sort=-1");
+            var options = new RestClientOptions($"https://api-pub.bitfinex.com/v2/trades/{pair}/hist?limit={maxCount}&sort=-1");
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
@@ -65,13 +66,21 @@ namespace Infrastructure
             return trades;
         }
 
-        public async Task<Ticker> GetTikcker(string pair)
+        public async Task<Ticker> GetTicker(string pair)
         {
             var options = new RestClientOptions($"https://api-pub.bitfinex.com/v2/ticker/{pair}");
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
-            var response = await client.GetAsync(request);
+            RestResponse response;
+            try
+            {
+                response = await client.GetAsync(request);
+            }
+            catch (Exception ex) 
+            {
+                throw new Exception("Internal" + pair);
+            }
 
             if (!response.IsSuccessful)
             {

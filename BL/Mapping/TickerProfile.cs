@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Core.Models;
 
-namespace Infrastructure.Mapping
+namespace BL.Mapping
 {
     public class TickerProfile : Profile
     {

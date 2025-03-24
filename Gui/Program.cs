@@ -1,6 +1,7 @@
+using BL;
 using BL.Mapping;
-using Infrastructure;
-using Infrastructure.Mapping;
+using Core.Interfaces;
+using Infrastructure.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,11 @@ builder.Services.AddAutoMapper(typeof(CandleProfile));
 builder.Services.AddAutoMapper(typeof(TradeProfile));
 builder.Services.AddAutoMapper(typeof(TickerProfile));
 builder.Services.AddTransient<BitRestClient>();
+
+builder.Services.AddScoped<IBitRestClient, BitRestClient>();
+builder.Services.AddScoped<BagCalc>();
+
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
@@ -30,5 +36,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapControllers();
 
 app.Run();
