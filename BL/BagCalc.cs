@@ -1,15 +1,14 @@
-﻿using Core.Models;
-using Core.Interfaces;
+﻿using Core.Interfaces;
 
 namespace BL
 {
     public class BagCalc
     {
-        private readonly IBitRestClient _restClient;
+        private readonly ITestConnector _connector;
 
-        public BagCalc(IBitRestClient restClient)
+        public BagCalc(ITestConnector connector)
         {
-            _restClient = restClient;
+            _connector = connector;
         }
         public async Task<Dictionary<string, Dictionary<string, decimal>>>Calculate()
         {
@@ -34,18 +33,16 @@ namespace BL
                         prices[$"{from}/{currency}"] = 1;
                         continue;
                     }
-                    //--------------------
-                    //TODO
-                    //--------------------
                     try
                     {
-                        var ticker = await _restClient.GetTicker($"t{from}{currency}");
+                        var ticker = await _connector.GetTicker($"t{from}{currency}");
                         prices[$"{from}/{currency}"] = ticker.LastPrice;
                     }
-                    catch (Exception ex) 
+                    catch
                     {
-                        prices[$"{from}/{currency}"] = 1; 
-                        continue; 
+                        var ticker1 = await _connector.GetTicker($"t{from}USD");
+                        var ticker2 = await _connector.GetTicker($"t{currency}USD");
+                        prices[$"{from}/{currency}"] = ticker1.LastPrice / ticker2.LastPrice;
                     }
                 }
             }

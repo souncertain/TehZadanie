@@ -72,15 +72,7 @@ namespace Infrastructure.Clients
             var client = new RestClient(options);
             var request = new RestRequest("");
             request.AddHeader("accept", "application/json");
-            RestResponse response;
-            try
-            {
-                response = await client.GetAsync(request);
-            }
-            catch (Exception ex) 
-            {
-                throw new Exception("Internal" + pair);
-            }
+            var response = await client.GetAsync(request);
 
             if (!response.IsSuccessful)
             {

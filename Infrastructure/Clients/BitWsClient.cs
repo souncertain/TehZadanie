@@ -15,7 +15,7 @@ namespace Infrastructure.Clients
         private string _tradePair;
         private string _candlePair;
         private int _maxTradeCount;
-        private int _curTradeCount;
+        private int _curTradeCount = 0;
 
         public event Action<Trade> NewBuyTrade;
         public event Action<Trade> NewSellTrade;
@@ -25,7 +25,6 @@ namespace Infrastructure.Clients
         {
             _tradePair = pair;
             _maxTradeCount = maxCount;
-            _curTradeCount = 0;
 
             _client = new WebsocketClient(_url);
             _client.MessageReceived
@@ -50,6 +49,7 @@ namespace Infrastructure.Clients
             if (_curTradeCount == _maxTradeCount)
             {
                 UnsubscribeTrades(_tradePair);
+                _curTradeCount = 0;
                 return;
             }
             if (message.StartsWith("{")) return;
@@ -69,7 +69,7 @@ namespace Infrastructure.Clients
                     Price = Convert.ToDecimal(tradeData[3]),
                     Pair = _tradePair
                 };
-
+                _curTradeCount++;
                 if (amount > 0)
                     NewBuyTrade?.Invoke(trade);
                 else

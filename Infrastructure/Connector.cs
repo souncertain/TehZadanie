@@ -15,13 +15,17 @@ namespace Infrastructure
             _bitWsClient = new();
         }
         #region REST
-        public Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount) 
+        public async Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount) 
         {
-            return _bitRestClient.GetTrades(pair, maxCount);
+            return await _bitRestClient.GetTrades(pair, maxCount);
         }
-        public Task<IEnumerable<Candle>> GetCandleSeriesAsync(string pair, int periodInSec, DateTimeOffset? from, DateTimeOffset? to = null, long? count = 0)
+        public async Task<IEnumerable<Candle>> GetCandleSeriesAsync(string pair, int periodInSec, DateTimeOffset? from, DateTimeOffset? to = null, long? count = 0)
         {
-            return _bitRestClient.GetCandles(pair, periodInSec, from, to, count);
+            return await _bitRestClient.GetCandles(pair, periodInSec, from, to, count);
+        }
+        public async Task<Ticker>GetTicker(string pair)
+        {
+            return await _bitRestClient.GetTicker(pair);
         }
         #endregion
 

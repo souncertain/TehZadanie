@@ -11,6 +11,9 @@ namespace Core.Interfaces
 
         Task<IEnumerable<Trade>> GetNewTradesAsync(string pair, int maxCount);
         Task<IEnumerable<Candle>> GetCandleSeriesAsync(string pair, int periodInSec, DateTimeOffset? from, DateTimeOffset? to = null, long? count = 0);
+        //Добавил метод GetTicker, для того чтобы вызывать его в вычислении портфеля и получать данные о паре валют,
+        //а также для выполнения задания "Получение информации о тикере (Ticker)"
+        Task<Ticker> GetTicker(string pair);  
 
         #endregion
 

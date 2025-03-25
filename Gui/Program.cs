@@ -1,6 +1,7 @@
 using BL;
 using BL.Mapping;
 using Core.Interfaces;
+using Infrastructure;
 using Infrastructure.Clients;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddAutoMapper(typeof(TradeProfile));
 builder.Services.AddAutoMapper(typeof(TickerProfile));
 builder.Services.AddTransient<BitRestClient>();
 
-builder.Services.AddScoped<IBitRestClient, BitRestClient>();
+builder.Services.AddScoped<ITestConnector, Connector>();
 builder.Services.AddScoped<BagCalc>();
 
 builder.Services.AddControllers();
