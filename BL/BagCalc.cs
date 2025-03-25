@@ -59,12 +59,12 @@ namespace BL
                     if (prices.ContainsKey(key))
                     {
                         var converted = asset.Value * prices[key];
-                        result[currency][asset.Key] = converted;
+                        result[currency][asset.Key] = Math.Round(converted, 2);
                         total += converted;
                     }
                 }
 
-                result[currency]["Total"] = total;
+                result[currency]["Total"] = Math.Round(total, 2);
             }
             return result;
         }
